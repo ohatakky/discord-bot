@@ -16,7 +16,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dg.AddHandler(messageCreate)
+	// handler
+	dg.AddHandler(sampleHandler)
 
 	err = dg.Open()
 	if err != nil {
@@ -24,26 +25,23 @@ func main() {
 	}
 	fmt.Println("BOT Running...")
 
-	// ctrl + c
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 	dg.Close()
 }
 
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func sampleHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.Bot {
 		return
 	}
 	member, err := s.State.Member(m.GuildID, m.Author.ID)
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 	mention := member.Mention()
 	_, err = s.ChannelMessageSend(os.Getenv("CHANNEL_ID"), mention)
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 }
